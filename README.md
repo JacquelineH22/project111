@@ -53,8 +53,8 @@ Run inference using the following command.
 
 ```shell
 CUDA_VISIBLE_DEVICES=0 python test.py \
-    configs/type/consep-train-prompt.py \
-    work_dirs/type/consep/train-prompt/latest.pth \
+    configs/type/pannuke-train-prompt.py \
+    work_dirs/type/pannuke/train-prompt/latest.pth \
     --format-only --eval-options \
     imgfile_prefix=outs/
 ```
