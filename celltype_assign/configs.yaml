@@ -1,0 +1,21 @@
+nuclei_seg_json_file: ./data/nuclei_segmentation_results.json
+nuclei_seg_types_json_file: ./data/nuclei_segmentation_types.json
+
+spatial_positions_file: ./data/tissue_positions.csv
+header: true  # whether tissue_positions.csv has a header
+scalefactors_json_file: ./data/scalefactors_json.json
+with_interval: true
+spot_shape: circle
+
+deconvolution_file: ./data/deconvolution_results.csv
+is_proportion: false  # whether the deconvolution results are proportions (range from 0-1) or cell abundance
+type_mapping_json_file: ./data/type_mapping.json
+
+spatial_info_json_file: ./results/spatial_info.json
+load_from_file: true  # if True, load spatial_info_json_file from disk if exists
+
+cell_info_json_file: ./results/cell_info.json
+
+metric: kl  # method to compute distance between cells when inferring intervals
+cbi_threshold: null  # if not None, cbi_threshold will be used to refine cell type assignment results
+n_processes: 10
