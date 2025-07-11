@@ -93,54 +93,12 @@ def parse_args():
         help="Opacity of painted segmentation map. In (0, 1] range.",
     )
     parser.add_argument("--local_rank", type=int, default=0)
-    parser.add_argument(
-        "--grid",
-        nargs="+",
-        action=DictAction,
-        help="Enable grid search mode with additional parameters (e.g., --grid logfile=log.txt)",
-    )
 
     args = parser.parse_args()
     if "LOCAL_RANK" not in os.environ:
         os.environ["LOCAL_RANK"] = str(args.local_rank)
     return args
 
-
-def grid_search_test_cfg(cfg, param_grid, distributed, args):
-    # 生成所有参数组合
-    # generate all combinations of parameters
-    param_combinations = list(product(*param_grid.values()))
-    param_keys = list(param_grid.keys())
-    best_score = 0
-    best_params = None
-    best_eval_results = None
-
-    for params in param_combinations:
-        # copy current config
-        current_cfg = deepcopy(cfg)
-        # update test_cfg with current parameters
-        for key, value in zip(param_keys, params):
-            current_cfg.model.test_cfg[key] = value
-        
-        # run test with current configuration
-        logging.info(f"Testing configuration: {dict(zip(param_keys, params))}")
-        score, eval_results = run_test_with_cfg(current_cfg, distributed=distributed, args=args)
-        
-        logging.info(f"Score:{score}")
-        logging.info(f"Evaluation Results: {eval_results}")
-        
-        if score > best_score:
-            best_score = score
-            best_params = deepcopy(current_cfg.model.test_cfg)
-            best_eval_results = eval_results
-
-    logging.info("Best Configuration: %s", best_params)
-    logging.info("Best Score: %s", best_score)
-    logging.info("Best Evaluation Results: %s", best_eval_results)
-    
-    print("Best Configuration:", best_params)
-    print("Best Score:", best_score)
-    print("Best Evaluation Results:", best_eval_results)
 
 
 def run_test_with_cfg(cfg, **kwargs):
@@ -259,23 +217,7 @@ def main():
         distributed = True
         init_dist(args.launcher, **cfg.dist_params)
     
-    param_grid = {
-        'score_thr': [0.1, 0.3, 0.5],
-        'iou_thr': [0.3, 0.5, 0.7],
-        'update_thr': [0.1, 0.3, 0.5]
-    }
-
-    if args.grid:
-        log_filename = args.grid["logfile"]
-        logging.basicConfig(
-            filename=log_filename,
-            filemode="w",
-            format="%(asctime)s - %(message)s",
-            level=logging.INFO
-        )
-        grid_search_test_cfg(cfg, param_grid, distributed, args)
-    else:
-        run_test_with_cfg(cfg, distributed=distributed, args=args)
+    run_test_with_cfg(cfg, distributed=distributed, args=args)
 
 
 if __name__ == "__main__":

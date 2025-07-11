@@ -26,6 +26,8 @@ class CelltypeAssignConfig:
     cell_seg_scale: float = 1
     header: bool = False
     is_proportion: bool = False
+    cell_composition_mode: str = 'full'  # 'full' or 'top'
+    top_m_count: int = 3
     load_from_file: bool = False
     metric: str = 'kl'
     top_k: int = 5
@@ -58,6 +60,14 @@ class CelltypeAssignConfig:
 
     def validate(self):
         """Validate configuration parameters"""
+        # validate cell composition mode
+        if self.cell_composition_mode not in ['full', 'top']:
+            raise ValueError('cell_composition_mode must be "full" or "top_m"')
+            
+        # validate top_m_count
+        if self.cell_composition_mode == 'top' and self.top_m_count <= 0:
+            raise ValueError('top_m_count must be positive when using top_m mode')
+
         # validate metric
         if self.metric not in ['kl', 'js', 'ce', 'cosine']:
             raise ValueError('Unsupported metric: %s' % self.metric)

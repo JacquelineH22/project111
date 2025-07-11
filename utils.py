@@ -6,13 +6,20 @@ from sklearn.metrics.pairwise import cosine_similarity
 import itertools
 
 
-def process_spot(spot, spot_size, spatial_loc, cell_info, *args):
+def process_spot(spot, spot_shape, spatial_loc, cell_info, *args):
 
-    if spot_size:
+    if spot_shape == 'rectangle':
+        spot_size = args[0]
         x_min = min(spatial_loc.loc[spot, 'pixel_x'], spatial_loc.loc[spot, 'pixel_x'] + spot_size[1])
         x_max = max(spatial_loc.loc[spot, 'pixel_x'], spatial_loc.loc[spot, 'pixel_x'] + spot_size[1])
         y_min = min(spatial_loc.loc[spot, 'pixel_y'], spatial_loc.loc[spot, 'pixel_y'] + spot_size[0])
         y_max = max(spatial_loc.loc[spot, 'pixel_y'], spatial_loc.loc[spot, 'pixel_y'] + spot_size[0])
+    elif spot_shape == 'square':
+        r=args[0]
+        x_min = min(spatial_loc.loc[spot, 'pixel_x']-r, spatial_loc.loc[spot, 'pixel_x'] + r)
+        x_max = max(spatial_loc.loc[spot, 'pixel_x']-r, spatial_loc.loc[spot, 'pixel_x'] + r)
+        y_min = min(spatial_loc.loc[spot, 'pixel_y']-r, spatial_loc.loc[spot, 'pixel_y'] + r)
+        y_max = max(spatial_loc.loc[spot, 'pixel_y']-r, spatial_loc.loc[spot, 'pixel_y'] + r)
     else: 
         r = args[0]
         x_center = spatial_loc.loc[spot, 'pixel_x']
@@ -32,7 +39,7 @@ def process_spot(spot, spot_size, spatial_loc, cell_info, *args):
     guesses_arr = np.array([cell['random_guess'] for cell in cell_info.values()])
 
     # select cells within the spot
-    if spot_size:
+    if spot_shape in ['rectangle', 'square']:
         mask = (centroid_array[:, 0] >= x_min) & (centroid_array[:, 0] <= x_max) & \
             (centroid_array[:, 1] >= y_min) & (centroid_array[:, 1] <= y_max)
     else:

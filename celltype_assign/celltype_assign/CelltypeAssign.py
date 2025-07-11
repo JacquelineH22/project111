@@ -339,6 +339,23 @@ class CelltypeAssign:
                 json.dump(spatial_info, f, indent=4)
 
         return spatial_info
+    
+    def _select_top_m_celltypes(self, cell_proportion):
+        
+        processed_proportion = cell_proportion.copy()
+        
+        for spot_idx in processed_proportion.index:
+            spot_proportions = processed_proportion.loc[spot_idx]
+            top_m_celltypes = spot_proportions.nlargest(self.top_m_count).index
+            
+            for celltype in processed_proportion.columns:
+                if celltype not in top_m_celltypes:
+                    processed_proportion.loc[spot_idx, celltype] = 0
+            total_proportion = processed_proportion.loc[spot_idx].sum()
+            if total_proportion > 0:
+                processed_proportion.loc[spot_idx] = processed_proportion.loc[spot_idx] / total_proportion
+            
+        return processed_proportion
 
 
     def _process_cell_composition(self):
@@ -347,6 +364,13 @@ class CelltypeAssign:
             cell_proportion = self.cell_composition
         else:
             cell_proportion = self.cell_composition.div(self.cell_composition.sum(axis=1), axis=0)
+        
+        # Select top m cell types
+        if self.cell_composition_mode == 'top':
+            print(f'    Using top {self.top_m_count} cell types per spot')
+            cell_proportion = self._select_top_m_celltypes(cell_proportion)
+        else:
+            print('    Using all cell types (full mode)')
 
         # to counts
         cell_composition_new = cell_proportion.copy()
