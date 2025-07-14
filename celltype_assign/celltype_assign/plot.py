@@ -117,9 +117,9 @@ if __name__ == '__main__':
 
     image_file = '/data1/hounaiqiao/yy/NucleiSeg/app/visiumHD/CRC_P2/wsi/crc_p2.tif'
     nuclei_seg_json_file = '/data1/hounaiqiao/yy/NucleiSeg/app/visiumHD/CRC_P2/seg/resized_output.json'
-    cell_info_file = '/data1/hounaiqiao/project111/results/visium_hd/cell_info.json'
+    cell_info_file = '/data1/hounaiqiao/project111/results/visium_hd/cell_info_rctd_top2.json'
 
-    save_dir = '/data1/hounaiqiao/project111/results/visium_hd/'
+    save_dir = '/data1/hounaiqiao/project111/results/visium_hd/viz_rctd_top2/'
 
     seg_colors = {
         'Neo': (255, 0, 0),
