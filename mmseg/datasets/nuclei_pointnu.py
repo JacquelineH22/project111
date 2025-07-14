@@ -7,15 +7,8 @@ import numpy as np
 class NucleiPointnuDataset(NucleiHV2Dataset):
     def __init__(self, **kwargs):
         
-        kwargs.setdefault("classes", ("epithelial", "lymphocyte", "neutrophil", "macrophage", "ambiguous"))
-        kwargs.setdefault("type_color", {
-            "0": ["nolabe", [0, 0, 0]], 
-            "1": ["epithelial", [255, 0, 0]], 
-            "2": ["lymphocyte", [0, 255, 0]], 
-            "3": ["neutrophil", [0, 0, 255]], 
-            "4": ["macrophage", [255, 255, 0]], 
-            "5": ["ambiguous", [255, 165, 0]]
-        })
+        kwargs.setdefault("classes", None)
+        kwargs.setdefault("type_color", )
         super(NucleiPointnuDataset, self).__init__(**kwargs)
 
     def result_to_inst(self, result):

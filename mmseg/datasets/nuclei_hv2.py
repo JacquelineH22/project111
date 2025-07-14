@@ -135,18 +135,14 @@ class NucleiHV2Dataset(CustomDataset):
         if "eval_type" in kwargs:
             kwargs.pop("eval_type")
         
-        self.classes = kwargs.pop("classes", ("epithelial", "lymphocyte", "neutrophil", "macrophage", "ambiguous"))
-        self.type_color = kwargs.pop("type_color", {
-            "0": ["nolabe", [0, 0, 0]], 
-            "1": ["epithelial", [255, 0, 0]], 
-            "2": ["lymphocyte", [0, 255, 0]], 
-            "3": ["neutrophil", [0, 0, 255]], 
-            "4": ["macrophage", [255, 255, 0]], 
-            "5": ["ambiguous", [255, 165, 0]]
-        })
+        self.classes = kwargs.pop("classes", None)
+        self.type_color = kwargs.pop("type_color", None)
         super(NucleiHV2Dataset, self).__init__(**kwargs)
         # self.num_classes = len(self.CLASSES)
-        self.num_classes = len(self.classes)
+        if self.classes:
+            self.num_classes = len(self.classes)
+        else:
+            self.num_classes = 2
 
     def get_gt(self):
         """Get ground truth for evaluation."""
@@ -618,6 +614,12 @@ class NucleiHV2Dataset(CustomDataset):
             binary_map[binary_map > 0] = 1
             label_idx = np.unique(pred)  # 0,1,2,...N
 
+            # 根据mapping调整res键的编号
+            for key, value in res.items():
+                if key != 'inst_preds':
+                    modified = {mapping.get(k, k): v for k, v in value.items()}
+                    res[key] = modified
+                    
             # [(y,x), ...]
             inst_centroid_yx = center_of_mass(
                 binary_map, pred, label_idx[1:]
