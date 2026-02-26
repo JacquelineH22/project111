@@ -1,7 +1,7 @@
-nuclei_seg_json_file: ./data/nuclei_segmentation_results.json
-nuclei_seg_types_json_file: ./data/nuclei_segmentation_types.json
+nuclei_seg_json_file: /data1/hounaiqiao/yy/NucleiSeg/app/visiumHD/CRC_P2/seg/resized_output.json
+nuclei_seg_types_json_file: /data1/hounaiqiao/wzr/benchmarks/spatiocell/celltype_assign/data/nuclei_segmentation_types.json
 
-spatial_positions_file: ./data/tissue_positions.csv
+spatial_positions_file: /data1/hounaiqiao/yy/NucleiSeg/benchmark_review/visiumhd/data/binned_outputs/square_016um/spatial/tissue_positions.parquet
 header: true  # whether tissue_positions.csv has a header
 scalefactors_json_file: ./data/scalefactors_json.json
 with_interval: true

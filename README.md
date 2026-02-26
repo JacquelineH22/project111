@@ -25,6 +25,7 @@ We developed a novel nuclei segmentation and analysis model that combines a mult
 Extract patches and format data using `extract_patches.py` and `preprocess.py`
 
 ```shell
+cd data_prepare
 python extract_patches.py
 python preprocess.py
 ```
@@ -41,6 +42,7 @@ Modified the config files in `configs`:
 Run the following command to fintune SAM model.
 
 ```shell
+cd morphology_analyzer
 CUDA_VISIBLE_DEVICES=0 python train.py configs/type/consep-train-sam.py
 ```
 
@@ -62,6 +64,15 @@ CUDA_VISIBLE_DEVICES=0 python test.py \
     work_dirs/type/pannuke/train-prompt/latest.pth \
     --format-only --eval-options \
     imgfile_prefix=outs/
+```
+
+### Evaluation
+
+Finally, calculate evaluation metrics, including DICE, AJI, DQ, SQ and PQ  through  `compute_stats.py`
+
+```shell
+cd metrics
+python compute_stats.py --mode instance --pred_dir outs --true_dir /path/to/gt_masks/ --ext mat 
 ```
 
 ## Module 2: Cell Type Annoataion
@@ -96,7 +107,7 @@ cd celltype_assign
 python run_celltype_assign.py
 ```
 
-You can visualize the SpatioCell results using `celltype_assign/example.ipynb`.
+You can visualize the SpatioCell results using `celltype_assign/tutorial.ipynb`.
 
 In addition, SpatioCell uses [Spotiphy](https://github.com/jyyulab/Spotiphy) as the default deconvolution backend. We also provide several commonly used alternatives, including Cell2Location, CytoSpace, and SpatialScope, in the `deconvolution_backends` directory.
 
@@ -128,7 +139,18 @@ Scripts for running competing methods, including Spotiphy, iStar, Tesla, GHIST, 
 
 4. Metrics
 
-Scripts for evaluation metrics are provided in `benchmarks/metrics`.
+Scripts for evaluation metrics are provided in `benchmarks/metrics/ct_annotate_eval.py`.
+For SpatioCell's annotation output in JSON format, first convert the results to a `.csv` file with the following columns: `cell_id`, `x`, `y`, and `cell_type`.  
+Then run:
+
+```shell
+cd benchmarks/metrics
+python ct_annotate_eval.py \
+  --pred_file /path/to/pred_csv_file \
+  --gt_file /path/to/gt_csv_file \
+  --savepath output/metrics.pkl \
+  --logfile output/metrics.log
+```
 
 
 

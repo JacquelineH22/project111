@@ -23,7 +23,7 @@ class CelltypeAssign:
 
         for key, value in config.__dict__.items():
             setattr(self, key, value)
-    
+
         self.nuclei_seg_info = None
         self.nuclei_seg_types = None
         self.spatial_positions = None

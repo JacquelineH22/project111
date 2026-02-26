@@ -189,3 +189,7 @@ data/
 
 zst/
 
+
+# local data & outputs
+Data/
+run_cell2location/

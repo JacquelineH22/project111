@@ -3,12 +3,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tqdm import tqdm
 
-import json
 from pathlib import Path
 import tarfile
 
 from matplotlib import cm
-from matplotlib.colors import to_rgb
 import matplotlib.pyplot as plt
 
 
@@ -42,7 +40,7 @@ def plot_assigned_celltype(
         all_celltypes = set()
         for v in cell_info.values():
             all_celltypes.add(v['assign'])
-            all_celltypes.add(v['gt'])     
+            all_celltypes.add(v['gt'])
         print("All cell types:", all_celltypes)
 
         all_celltypes = sorted(list(all_celltypes))
@@ -111,71 +109,3 @@ def create_color_legend(assigned_colors, seg_colors, save_path):
     print('Color legend saved to %s' % save_path)
 
     return
-
-
-if __name__ == '__main__':
-
-    image_file = '/data1/hounaiqiao/yy/NucleiSeg/app/visiumHD/CRC_P2/wsi/crc_p2.tif'
-    nuclei_seg_json_file = '/data1/hounaiqiao/yy/NucleiSeg/app/visiumHD/CRC_P2/seg/resized_output.json'
-    cell_info_file = '/data1/hounaiqiao/project111/results/visium_hd/cell_info_rctd_top2.json'
-
-    save_dir = '/data1/hounaiqiao/project111/results/visium_hd/viz_rctd_top2/'
-
-    seg_colors = {
-        'Neo': (255, 0, 0),
-        'Conn': (0, 255, 0),
-        'Inflam': (255, 255, 0),
-        'Dead': (0, 255, 255),
-        'Epi': (255, 0, 255),
-        'unassigned type': (169, 169, 169)
-    }
-
-    # assigned_colors = {
-    #     "B-cells": (255, 82, 82),
-    #     "T-cells": (224, 64, 251),
-    #     "Plasmablasts": (255, 64, 129),
-    #     "Endothelial": (124, 77, 255),
-    #     "PVL": (83, 109, 254),
-    #     "Normal Epithelial": (24, 255, 255),
-    #     "Cancer Epithelial": (118, 255, 3),
-    #     "CAFs": (255, 255, 0),
-    #     "Myeloid": (255, 171, 64),
-    #     "unassigned type": (169, 169, 169),
-    #     "Dead": (169, 169, 169),
-    # }
-
-    line_width = -1
-    
-    # load data
-    print('Loading data...')
-    image = cv2.cvtColor(cv2.imread(image_file), cv2.COLOR_BGR2RGB)
-    with open(nuclei_seg_json_file, 'r') as f:
-        nuclei_seg = json.load(f)
-    with open(cell_info_file, 'r') as f:
-        cell_info = json.load(f)
-
-    # draw assigned cell type
-    print('Drawing assigned cell type...')
-    mask_assigned, mask_guessed, mask_seg = plot_assigned_celltype(
-        image, nuclei_seg, cell_info, seg_colors=seg_colors,
-        line_width = line_width
-    )
-
-    # save
-    print('Saving...')
-    image_resized = cv2.resize(image, fx=0.5, fy=0.5, dsize=(0, 0))
-    mask_assigned_resized = cv2.resize(mask_assigned, fx=0.5, fy=0.5, dsize=(0, 0))
-    mask_guessed_resized = cv2.resize(mask_guessed, fx=0.5, fy=0.5, dsize=(0, 0))
-    # mask_gt_resized = cv2.resize(mask_gt, fx=0.5, fy=0.5, dsize=(0, 0))
-    mask_seg_resized = cv2.resize(mask_seg, fx=0.5, fy=0.5, dsize=(0, 0))
-
-    Path(save_dir).mkdir(parents=True, exist_ok=True)
-    cv2.imwrite('%s/image_resized.png' % save_dir, cv2.cvtColor(image_resized, cv2.COLOR_RGB2BGR))
-    cv2.imwrite('%s/assigned_mask_resized.png' % save_dir, cv2.cvtColor(mask_assigned_resized, cv2.COLOR_RGBA2BGRA))
-    cv2.imwrite('%s/guessed_mask_resized.png' % save_dir, cv2.cvtColor(mask_guessed_resized, cv2.COLOR_RGBA2BGRA))
-    # cv2.imwrite('%s/gt_mask_resized.png' % save_dir, cv2.cvtColor(mask_gt_resized, cv2.COLOR_RGBA2BGRA))
-    cv2.imwrite('%s/seg_mask_resized.png' % save_dir, cv2.cvtColor(mask_seg_resized, cv2.COLOR_RGBA2BGRA))
-
-    make_targz('%s/%s.tar.gz' % (Path(save_dir).parent, Path(save_dir).name), save_dir)
-
-    print('Done!')
