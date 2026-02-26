@@ -18,6 +18,8 @@ pip install -r requirements.txt
 
 We developed a novel nuclei segmentation and analysis model that combines a multi-scale feature encoding automatic prompt generator (Prompter) with a fine-tuned SAM model adapted for H&E images. This approach leverages H&E images for precise cell localization and counting, while incorporating cell morphology to generate classification probability profiles.
 
+For more detailed information on the threshold selection in config, please check the README in `morphology_analyzer`.
+
 ### Train
 
 #### Extract Patches and Preprocess
