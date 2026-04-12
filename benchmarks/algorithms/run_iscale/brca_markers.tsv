@@ -1,0 +1,349 @@
+CD79A	B-cells
+MZB1	B-cells
+DERL3	B-cells
+ITM2C	B-cells
+SEC11C	B-cells
+MS4A1	B-cells
+CD79B	B-cells
+TNFRSF17	B-cells
+BANK1	B-cells
+CD19	B-cells
+RAB30	B-cells
+SLAMF7	B-cells
+TCL1A	B-cells
+DNAAF1	B-cells
+SPIB	B-cells
+LY86	B-cells
+CD1C	B-cells
+TYROBP	Dendritic
+GPR183	Dendritic
+CD83	Dendritic
+FCER1G	Dendritic
+PLD4	Dendritic
+LYZ	Dendritic
+AIF1	Dendritic
+MNDA	Dendritic
+CD86	Dendritic
+IGSF6	Dendritic
+LILRA4	Dendritic
+FGL2	Dendritic
+LY86	Dendritic
+BASP1	Dendritic
+SPIB	Dendritic
+CXCL16	Dendritic
+SLAMF7	Dendritic
+C15orf48	Dendritic
+IL3RA	Dendritic
+GZMB	Dendritic
+FAM49A	Dendritic
+CD1C	Dendritic
+ITGAX	Dendritic
+FCER1A	Dendritic
+PTGDS	Dendritic
+CLECL1	Dendritic
+TCL1A	Dendritic
+CLEC9A	Dendritic
+CD80	Dendritic
+RAMP2	Endothelial
+VWF	Endothelial
+PECAM1	Endothelial
+EGFL7	Endothelial
+AQP1	Endothelial
+CLEC14A	Endothelial
+CAV1	Endothelial
+TCF4	Endothelial
+CD93	Endothelial
+CLDN5	Endothelial
+MMRN2	Endothelial
+IL3RA	Endothelial
+KDR	Endothelial
+SOX18	Endothelial
+SOX17	Endothelial
+PDK4	Endothelial
+NOSTRIN	Endothelial
+ZEB1	Endothelial
+STC1	Endothelial
+ANGPT2	Endothelial
+HOXD9	Endothelial
+RAPGEF3	Endothelial
+HOXD8	Endothelial
+BTNL9	Endothelial
+FLNB	Endothelial
+ANKRD29	Endothelial
+CXCL12	Endothelial
+SNAI1	Endothelial
+EDN1	Endothelial
+PPARG	Endothelial
+EDNRB	Endothelial
+ESM1	Endothelial
+AKR1C3	Endothelial
+CSF3	Endothelial
+LUM	Fibroblast
+PCOLCE	Fibroblast
+CXCL12	Fibroblast
+CCDC80	Fibroblast
+MMP2	Fibroblast
+POSTN	Fibroblast
+FBLN1	Fibroblast
+TCF4	Fibroblast
+IGF1	Fibroblast
+PTGDS	Fibroblast
+DPT	Fibroblast
+PDGFRB	Fibroblast
+PDGFRA	Fibroblast
+CRISPLD2	Fibroblast
+PTN	Fibroblast
+ACTA2	Fibroblast
+EDNRB	Fibroblast
+SFRP4	Fibroblast
+TCEAL7	Fibroblast
+TAC1	Fibroblast
+MEDAG	Fibroblast
+ADH1B	Fibroblast
+LPL	Fibroblast
+LRRC15	Fibroblast
+FSTL3	Fibroblast
+ALDH1A3	Fibroblast
+HOXD8	Fibroblast
+GJB2	Fibroblast
+TIMP4	Fibroblast
+TUBB2B	Fibroblast
+C5orf46	Fibroblast
+MMP1	Fibroblast
+TYROBP	Macrophage
+FCER1G	Macrophage
+CD68	Macrophage
+C1QA	Macrophage
+AIF1	Macrophage
+C1QC	Macrophage
+FCGR3A	Macrophage
+CD14	Macrophage
+LYZ	Macrophage
+APOC1	Macrophage
+CD163	Macrophage
+IGSF6	Macrophage
+CD4	Macrophage
+FGL2	Macrophage
+CXCL16	Macrophage
+MRC1	Macrophage
+ZEB2	Macrophage
+CD86	Macrophage
+MNDA	Macrophage
+CD83	Macrophage
+C15orf48	Macrophage
+LY86	Macrophage
+CD93	Macrophage
+ADAM9	Macrophage
+ITGAM	Macrophage
+ITGAX	Macrophage
+CCL8	Macrophage
+PDCD1LG2	Macrophage
+CD80	Macrophage
+APOBEC3A	Macrophage
+CRHBP	Macrophage
+MMP12	Macrophage
+LYZ	Myeloid
+TYROBP	Myeloid
+AIF1	Myeloid
+FCER1G	Myeloid
+FGL2	Myeloid
+CD68	Myeloid
+CD14	Myeloid
+FCGR3A	Myeloid
+MNDA	Myeloid
+IGSF6	Myeloid
+ZEB2	Myeloid
+C15orf48	Myeloid
+S100A8	Myeloid
+CD83	Myeloid
+C1QA	Myeloid
+CD93	Myeloid
+C1QC	Myeloid
+CD86	Myeloid
+LY86	Myeloid
+ITGAX	Myeloid
+FAM49A	Myeloid
+CD163	Myeloid
+MRC1	Myeloid
+APOBEC3A	Myeloid
+ITGAM	Myeloid
+CX3CR1	Myeloid
+PLD4	Myeloid
+CCL20	Myeloid
+CD80	Myeloid
+CD1C	Myeloid
+FCER1A	Myeloid
+KRT7	Neoplasm
+KRT8	Neoplasm
+EPCAM	Neoplasm
+CLDN4	Neoplasm
+TACSTD2	Neoplasm
+ELF3	Neoplasm
+CD9	Neoplasm
+DSP	Neoplasm
+EIF4EBP1	Neoplasm
+HMGA1	Neoplasm
+ENAH	Neoplasm
+CCND1	Neoplasm
+BACE2	Neoplasm
+HOOK2	Neoplasm
+SMS	Neoplasm
+S100A14	Neoplasm
+TFAP2A	Neoplasm
+FASN	Neoplasm
+DSC2	Neoplasm
+CDC42EP1	Neoplasm
+SQLE	Neoplasm
+SCD	Neoplasm
+CTTN	Neoplasm
+SLC25A37	Neoplasm
+TRAF4	Neoplasm
+SH3YL1	Neoplasm
+CCDC6	Neoplasm
+FBLIM1	Neoplasm
+JUP	Neoplasm
+TPD52	Neoplasm
+NPM3	Neoplasm
+SFRP1	Neoplasm
+SDC4	Neoplasm
+AR	Neoplasm
+SLC5A6	Neoplasm
+MLPH	Neoplasm
+EGFR	Neoplasm
+C6orf132	Neoplasm
+KLF5	Neoplasm
+CDH1	Neoplasm
+LYPD3	Neoplasm
+S100A8	Neoplasm
+FLNB	Neoplasm
+KRT15	Neoplasm
+CENPF	Neoplasm
+EDN1	Neoplasm
+CLCA2	Neoplasm
+KRT6B	Neoplasm
+KRT16	Neoplasm
+ERBB2	Neoplasm
+KRT5	Neoplasm
+FOXA1	Neoplasm
+ELF5	Neoplasm
+MKI67	Neoplasm
+KRT14	Neoplasm
+MYO5B	Neoplasm
+LGALSL	Neoplasm
+AKR1C3	Neoplasm
+AKR1C1	Neoplasm
+DMKN	Neoplasm
+CEACAM6	Neoplasm
+RORC	Neoplasm
+ABCC11	Neoplasm
+GJB2	Neoplasm
+SERHL2	Neoplasm
+ALDH1A3	Neoplasm
+SCGB2A1	Neoplasm
+C5orf46	Neoplasm
+CLIC6	Neoplasm
+NCAM1	Neoplasm
+KRT8	Normal Epithelial
+CLDN4	Normal Epithelial
+TACSTD2	Normal Epithelial
+SDC4	Normal Epithelial
+ELF3	Normal Epithelial
+CD9	Normal Epithelial
+SFRP1	Normal Epithelial
+KRT15	Normal Epithelial
+SH3YL1	Normal Epithelial
+TRAF4	Normal Epithelial
+PIGR	Normal Epithelial
+KLF5	Normal Epithelial
+JUP	Normal Epithelial
+DMKN	Normal Epithelial
+ELF5	Normal Epithelial
+DST	Normal Epithelial
+CDH1	Normal Epithelial
+KRT23	Normal Epithelial
+KIT	Normal Epithelial
+LYPD3	Normal Epithelial
+MLPH	Normal Epithelial
+KRT5	Normal Epithelial
+AGR3	Normal Epithelial
+ANKRD30A	Normal Epithelial
+USP53	Normal Epithelial
+PGR	Normal Epithelial
+KRT14	Normal Epithelial
+ERBB2	Normal Epithelial
+ESR1	Normal Epithelial
+PTN	Normal Epithelial
+MYBPC1	Normal Epithelial
+SERPINA3	Normal Epithelial
+ALDH1A3	Normal Epithelial
+KRT6B	Normal Epithelial
+ACTG2	Normal Epithelial
+OXTR	Normal Epithelial
+MYLK	Normal Epithelial
+MYH11	Normal Epithelial
+LIF	Normal Epithelial
+TUBB2B	Normal Epithelial
+CLIC6	Normal Epithelial
+HPX	Normal Epithelial
+ACTA2	Perivascular-Like
+NDUFA4L2	Perivascular-Like
+CAV1	Perivascular-Like
+PDGFRB	Perivascular-Like
+PCOLCE	Perivascular-Like
+MYLK	Perivascular-Like
+CRISPLD2	Perivascular-Like
+ANGPT2	Perivascular-Like
+TCF4	Perivascular-Like
+MYH11	Perivascular-Like
+FBLIM1	Perivascular-Like
+SSTR2	Perivascular-Like
+EDNRB	Perivascular-Like
+AVPR1A	Perivascular-Like
+PDK4	Perivascular-Like
+PTN	Perivascular-Like
+CCL8	Perivascular-Like
+LPL	Perivascular-Like
+ANKRD29	Perivascular-Like
+ACTG2	Perivascular-Like
+TCEAL7	Perivascular-Like
+FOXC2	Perivascular-Like
+HOXD8	Perivascular-Like
+CD3E	T Cells
+CD3D	T Cells
+PTPRC	T Cells
+IL2RG	T Cells
+CD69	T Cells
+CCL5	T Cells
+CXCR4	T Cells
+CYTIP	T Cells
+CD3G	T Cells
+DUSP2	T Cells
+LTB	T Cells
+TRAC	T Cells
+GZMA	T Cells
+RHOH	T Cells
+IL7R	T Cells
+NKG7	T Cells
+CD247	T Cells
+CD27	T Cells
+CD8A	T Cells
+TIGIT	T Cells
+CD8B	T Cells
+TUBA4A	T Cells
+PRF1	T Cells
+GZMB	T Cells
+LAG3	T Cells
+GZMK	T Cells
+KLRB1	T Cells
+ADGRE5	T Cells
+PDCD1	T Cells
+CCR7	T Cells
+CTLA4	T Cells
+SELL	T Cells
+KLRD1	T Cells
+GNLY	T Cells
+SLAMF1	T Cells
+FOXP3	T Cells
+TCF7	T Cells
+KLRC1	T Cells
+IL2RA	T Cells
