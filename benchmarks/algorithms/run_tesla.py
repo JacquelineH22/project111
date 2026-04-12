@@ -34,7 +34,6 @@ if issparse(counts.X):
 # #Important note: If you get incorrect contour for all of the 3 three methods, please double check your array_x, array_y, pixel_x, pixel_y are matched correctly.
 
 # # #-----------------1. Detect contour using cv2-----------------
-# 自定义阈值计算轮廓
 cnt=tesla.cv2_detect_contour(img, CANNY_THRESH_1 = 30, CANNY_THRESH_2 = 90, 
                              apertureSize=5,L2gradient = True)
 
@@ -52,17 +51,10 @@ cv2.drawContours(img_new, [cnt], -1, (255), thickness=50)
 img_new=cv2.resize(img_new, ((resize_width, resize_height)))
 cv2.imwrite('/data1/hounaiqiao/wzr/benchmarks/deconvolution_mapping/result/TESLA/luca/luca_cnt.jpg', img_new)
 
-#Set size of superpixel
-# cnt = np.array([
-#     [[0, 0]],           # 左上角
-#     [[30786-1, 0]],     # 右上角
-#     [[30786-1, 24241-1]], # 右下角
-#     [[0, 24241-1]]     # 左下角
-# ], dtype=np.int32)
 res=50
 rename_dict = {
     'x': 'array_x',
-    'y': 'array_y', 
+    'y': 'array_y',
     'x_pixel': 'pixel_x',
     'y_pixel': 'pixel_y'
 }

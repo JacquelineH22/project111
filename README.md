@@ -74,7 +74,7 @@ Finally, calculate evaluation metrics, including DICE, AJI, DQ, SQ and PQ  throu
 
 ```shell
 cd metrics
-python compute_stats.py --mode instance --pred_dir outs --true_dir /path/to/gt_masks/ --ext mat 
+python compute_stats.py --mode instance --pred_dir outs --true_dir /path/to/gt_masks/ --ext mat
 ```
 
 ## Module 2: Cell Type Annoataion
@@ -119,8 +119,7 @@ In addition, SpatioCell uses [Spotiphy](https://github.com/jyyulab/Spotiphy) as 
 
 Scripts for generating simulated multicellular-resolution spatial transcriptomics (ST) data from Xenium ST data are provided in the `data_prepare` directory.
 
-First, download the Xenium dataset from:  
-`https://www.10xgenomics.com/products/xenium-in-situ/preview-dataset-human-breast`
+First, download the Xenium dataset from: https://www.10xgenomics.com/products/xenium-in-situ/preview-dataset-human-breast`.
 
 Then run:
 
@@ -142,7 +141,7 @@ Scripts for running competing methods, including Spotiphy, iStar, Tesla, GHIST, 
 4. Metrics
 
 Scripts for evaluation metrics are provided in `benchmarks/metrics/ct_annotate_eval.py`.
-For SpatioCell's annotation output in JSON format, first convert the results to a `.csv` file with the following columns: `cell_id`, `x`, `y`, and `cell_type`.  
+For SpatioCell's annotation output in JSON format, first convert the results to a `.csv` file with the following columns: `cell_id`, `x`, `y`, and `cell_type`.
 Then run:
 
 ```shell
@@ -153,6 +152,3 @@ python ct_annotate_eval.py \
   --savepath output/metrics.pkl \
   --logfile output/metrics.log
 ```
-
-
-
