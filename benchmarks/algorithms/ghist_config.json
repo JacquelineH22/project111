@@ -50,9 +50,9 @@
         "fp_nuc_sizes": "data_demo/matched_nuclei_filtered.csv"
     },
     "data_sources_predict": {
-        "fp_avgexp": "data_demo/avgexp.csv",
-        "fp_nuc_seg": "/data1/hounaiqiao/yy/NucleiSeg/benchmark_review/methods/ghist/results/luca/ghist/he_image_nuclei_seg.tif",
-        "fp_hist": "/data1/hounaiqiao/wzr/Simulated_Xenium/luca/HE_aligned/wholeslide/align_he.png",
+        "fp_avgexp": "./data/avgexp.csv",
+        "fp_nuc_seg": "./results/ghist/he_image_nuclei_seg.tif",
+        "fp_hist": "./data/he.png",
         "fp_nuc_sizes": false
     },
     "regions_val": {

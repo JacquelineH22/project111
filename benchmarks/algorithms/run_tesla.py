@@ -17,7 +17,7 @@ from IPython.display import Image
 print(tesla.__version__)
 #Read in gene expression and spatial location
 counts=sc.read("/data1/hounaiqiao/wzr/Simulated_Xenium/luca/w100/simulated_square_spot_data.h5ad")
-#Read in hitology image
+#Read in histology image
 img=cv2.imread("/data1/hounaiqiao/wzr/Simulated_Xenium/luca/HE_aligned/wholeslide/align_he.png")
 
 resize_factor=1000/np.min(img.shape[0:2])

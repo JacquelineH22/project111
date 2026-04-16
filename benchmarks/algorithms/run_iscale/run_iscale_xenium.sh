@@ -1,266 +1,152 @@
 #!/bin/bash
 ################################################################################
-# iSCALE运行脚本 - Xenium Pseudo-Visium数据（修复版）
-# 
-# 修复内容：
-# 1. 确保使用所有Daughter Captures（D1, D2, ...）
-# 2. 正确生成radius.txt（整数格式）
-# 3. 自动检测可用的captures
+# iSCALE Pipeline - Xenium Pseudo-Visium Data
 #
-# 输入数据: benchmark_data/xenium_benchmark_input/iscale_training_data/
-# 输出数据: benchmark_data/xenium_benchmark_output/
-#
-# 使用方法:
+# Usage:
 #   chmod +x run_iscale_xenium.sh
 #   CUDA_VISIBLE_DEVICES=2 nohup bash run_iscale_xenium.sh > iscale_run.log 2>&1 &
 #   tail -f iscale_run.log
 ################################################################################
 
-set -e  # 遇到错误立即退出
+set -e
 
-# ==================== 参数配置 ====================
+# ==================== Configuration ====================
 
-# 数据目录（修改为你的实际路径）
-INPUT_BASE="/data1/hounaiqiao/wzr/Simulated_Xenium/brca_rep1/w55/iscale_input"
-OUTPUT_BASE="/data1/hounaiqiao/wzr/Simulated_Xenium/brca_rep1/w55/iscale_output"
+INPUT_BASE="./data/iscale_input"
+OUTPUT_BASE="./results/iscale"
 
-# iSCALE参数
-DEVICE="cuda"           # "cuda" 或 "cpu"
-N_GENES=313             # 基因数量（你的数据有313个基因）
-N_CLUSTERS=15           # 聚类数量
-DIST_ST=100             # ST样本间的平滑参数
-N_STATES=5              # 训练状态数量（集成预测）
-EPOCHS=1000             # 训练轮数
+DEVICE="cuda"
+N_GENES=313
+N_CLUSTERS=15
+DIST_ST=100
+N_STATES=5
+EPOCHS=1000
+PIXEL_SIZE_RAW=0.2125
+PIXEL_SIZE=0.5
 
-# Xenium参数
-PIXEL_SIZE_RAW=0.2125   # 原始像素大小 (µm/pixel)
-PIXEL_SIZE=0.5          # 目标像素大小 (µm/pixel)
+export OPENBLAS_NUM_THREADS=32 OMP_NUM_THREADS=32 MKL_NUM_THREADS=32
 
-# 线程设置
-export OPENBLAS_NUM_THREADS=32
-export OMP_NUM_THREADS=32
-export MKL_NUM_THREADS=32
+# ==================== Helpers ====================
 
-# ==================== 函数定义 ====================
+step() { echo; echo "[$1] $2"; echo "----------------------------------------"; }
 
-print_section() {
-    echo ""
-    echo "========================================================================"
-    echo "  $1"
-    echo "========================================================================"
-    echo ""
-}
+check_file() { [ -f "$1" ] || { echo "ERROR: missing file $1"; exit 1; }; }
+check_dir()  { [ -d "$1" ] || { echo "ERROR: missing dir $1";  exit 1; }; }
 
-print_step() {
-    echo ""
-    echo "[$1] $2"
-    echo "----------------------------------------"
-}
+# ==================== Validate Inputs ====================
 
-check_file() {
-    if [ ! -f "$1" ]; then
-        echo "✗ 错误: 找不到文件 $1"
-        exit 1
-    fi
-    echo "✓ 文件存在: $1"
-}
+echo "Python: $(python --version 2>&1)"
+[[ "$CONDA_DEFAULT_ENV" == "iSCALE_env" ]] || echo "WARNING: not in iSCALE_env (current: $CONDA_DEFAULT_ENV)"
 
-check_dir() {
-    if [ ! -d "$1" ]; then
-        echo "✗ 错误: 找不到目录 $1"
-        exit 1
-    fi
-    echo "✓ 目录存在: $1"
-}
-
-# ==================== 检查环境 ====================
-
-print_section "检查运行环境"
-
-echo "当前工作目录: $(pwd)"
-echo "Python: $(which python)"
-echo "Python版本: $(python --version)"
-
-# 检查conda环境
-if [[ "$CONDA_DEFAULT_ENV" != "iSCALE_env" ]]; then
-    echo "⚠ 警告: 当前不在iSCALE_env环境中"
-    echo "  当前环境: $CONDA_DEFAULT_ENV"
-    echo "  建议运行: conda activate iSCALE_env"
-fi
-
-# 检查输入目录和文件
-echo ""
-echo "检查输入数据..."
-check_dir "$INPUT_BASE"
-check_dir "$INPUT_BASE/MotherImage"
-check_dir "$INPUT_BASE/DaughterCaptures/AllignedToMother/D1"
+check_dir  "$INPUT_BASE"
+check_dir  "$INPUT_BASE/MotherImage"
+check_dir  "$INPUT_BASE/DaughterCaptures/AllignedToMother/D1"
 check_file "$INPUT_BASE/DaughterCaptures/AllignedToMother/D1/cnts.tsv"
 check_file "$INPUT_BASE/DaughterCaptures/AllignedToMother/D1/locs.tsv"
 
-# 查找H&E图像
 HE_FILE=$(find "$INPUT_BASE/MotherImage" -name "he-raw.*" -o -name "he-scaled.*" | head -1)
-if [ -z "$HE_FILE" ]; then
-    echo "✗ 错误: 找不到H&E图像文件"
-    exit 1
-fi
-echo "✓ H&E图像: $HE_FILE"
+[ -n "$HE_FILE" ] || { echo "ERROR: H&E image not found"; exit 1; }
 
-# 创建输出目录
-echo ""
-echo "创建输出目录..."
 mkdir -p "$OUTPUT_BASE/MotherImage"
-echo "✓ 输出目录: $OUTPUT_BASE"
 
-# ==================== 开始处理 ====================
-
-print_section "开始运行 iSCALE 流程"
-
-START_TIME=$(date +%s)
-echo "开始时间: $(date)"
-
-# 设置路径变量
+# Convenience aliases
 prefix_mother="${OUTPUT_BASE}/MotherImage/"
 input_mother="${INPUT_BASE}/MotherImage/"
-input_capture="${INPUT_BASE}/DaughterCaptures/AllignedToMother/D1/"
 
-# ==================== Step 1: 复制和预处理图像 ====================
+echo "Input:  $INPUT_BASE"
+echo "Output: $OUTPUT_BASE"
 
-print_step "1/10" "图像预处理"
+START_TIME=$(date +%s)
 
-# 复制H&E图像到输出目录
-echo "复制H&E图像..."
+# ==================== Step 1: Image Preprocessing ====================
+
+step "1/10" "Image preprocessing"
+
 cp "$INPUT_BASE/MotherImage/he-raw."* "${OUTPUT_BASE}/MotherImage/" 2>/dev/null || true
 
-# 复制radius文件
-if [ -f "$INPUT_BASE/MotherImage/radius-raw.txt" ]; then
+[ -f "$INPUT_BASE/MotherImage/radius-raw.txt" ] && \
     cp "$INPUT_BASE/MotherImage/radius-raw.txt" "${OUTPUT_BASE}/MotherImage/"
-    echo "✓ 复制radius-raw.txt"
-fi
 
-# 预处理图像（缩放和padding）
-echo "预处理H&E图像..."
 python preprocess.py \
     --prefix="${prefix_mother}" \
     --image \
     --outputDir="${prefix_mother}"
 
-# 生成radius.txt（缩放后的半径，必须是整数）
-echo "生成radius.txt..."
+# Compute scaled radius (must be integer)
 if [ -f "${OUTPUT_BASE}/MotherImage/radius-raw.txt" ]; then
-    # 从radius-raw.txt读取原始半径
     RADIUS_RAW=$(cat "${OUTPUT_BASE}/MotherImage/radius-raw.txt")
-    # 计算缩放后的半径: radius_scaled = radius_raw * (pixel_size_raw / pixel_size)
-    # 注意：必须输出整数，plot_spots.py用int()读取
     RADIUS_SCALED=$(python -c "print(int(${RADIUS_RAW} * ${PIXEL_SIZE_RAW} / ${PIXEL_SIZE} + 0.5))")
-    echo "${RADIUS_SCALED}" > "${OUTPUT_BASE}/MotherImage/radius.txt"
-    echo "✓ 生成radius.txt: ${RADIUS_SCALED} pixels (原始: ${RADIUS_RAW} pixels)"
 else
-    # 如果没有radius-raw.txt，直接计算
     RADIUS_SCALED=$(python -c "print(int((55/2) / ${PIXEL_SIZE} + 0.5))")
-    echo "${RADIUS_SCALED}" > "${OUTPUT_BASE}/MotherImage/radius.txt"
-    echo "✓ 生成radius.txt: ${RADIUS_SCALED} pixels"
 fi
+echo "${RADIUS_SCALED}" > "${OUTPUT_BASE}/MotherImage/radius.txt"
+echo "radius.txt: ${RADIUS_SCALED} px"
 
-echo "✓ 图像预处理完成"
+# ==================== Step 2: Merge All Daughter Captures ====================
 
-# ==================== Step 2: 整合所有Daughter Captures ====================
+step "2/10" "Merging Daughter Captures"
 
-print_step "2/10" "整合所有Daughter Captures数据"
-
-# 自动检测所有可用的captures
-echo "检测可用的Daughter Captures:"
-CAPTURE_DIRS=(${INPUT_BASE}/DaughterCaptures/AllignedToMother/D*)
 CAPTURE_PATHS=()
-
-for cap_dir in "${CAPTURE_DIRS[@]}"; do
-    if [ -d "$cap_dir" ]; then
-        cap_name=$(basename $cap_dir)
-        n_spots=$(($(wc -l < ${cap_dir}/locs.tsv) - 1))
-        echo "  ✓ ${cap_name}: ${n_spots} spots"
-        CAPTURE_PATHS+=("${cap_dir}/")
-    fi
+for cap_dir in "${INPUT_BASE}/DaughterCaptures/AllignedToMother/D"*/; do
+    [ -d "$cap_dir" ] && CAPTURE_PATHS+=("$cap_dir")
 done
+echo "Found ${#CAPTURE_PATHS[@]} captures"
 
-echo ""
-echo "整合 ${#CAPTURE_PATHS[@]} 个captures..."
-
-# 使用stitch命令整合所有captures
 python stitch_locs_cnts_relativeToM.py \
     "${prefix_mother}" \
     "${CAPTURE_PATHS[@]}"
 
-# 验证整合结果
-n_total_spots=$(($(wc -l < ${prefix_mother}locs.tsv) - 1))
-echo "✓ 整合后总spots数: ${n_total_spots}"
+echo "Total spots: $(($(wc -l < ${prefix_mother}locs.tsv) - 1))"
 
-# ==================== Step 3: 选择基因 ====================
+# ==================== Step 3: Gene Selection ====================
 
-print_step "3/10" "选择高变异基因"
+step "3/10" "Selecting highly variable genes (n=${N_GENES})"
 
 python select_genes.py \
     --n-top=${N_GENES} \
     "${prefix_mother}cnts.tsv" \
     "${prefix_mother}gene-names.txt"
 
-echo "✓ 选择了 ${N_GENES} 个基因"
+# ==================== Step 4: Spot Visualization ====================
 
-# ==================== Step 4: 可视化Spots ====================
+step "4/10" "Visualizing spots"
 
-print_step "4/10" "可视化Spot级别表达"
-
-echo "绘制spots..."
 python plot_spots.py \
     "${prefix_mother}" \
     grayHE_flag=True
 
-echo "绘制整合后的spots..."
 python plot_spots_integrated.py \
     "${prefix_mother}" \
     grayHE_flag=True \
     ${DIST_ST}
 
-echo "✓ Spots可视化完成"
+# ==================== Step 5: Histology Feature Extraction ====================
 
-# ==================== Step 5: 提取组织学特征 ====================
+step "5/10" "Extracting histology features (HIPT)"
 
-print_step "5/10" "提取组织学特征（H&E）"
-
-echo "使用HIPT模型提取特征..."
 python extract_features.py \
     "${prefix_mother}" \
     --device=${DEVICE}
 
-echo "✓ 特征提取完成"
+# ==================== Step 6: Tissue Mask ====================
 
-# ==================== Step 6: 生成组织掩膜 ====================
+step "6/10" "Generating tissue mask"
 
-print_step "6/10" "生成组织掩膜"
-
-echo "自动检测组织区域..."
 python get_mask.py \
     "${prefix_mother}embeddings-hist.pickle" \
     "${prefix_mother}"
 
-echo "优化掩膜..."
 python refine_mask.py \
     --prefix="${prefix_mother}"
 
-echo "可视化embeddings..."
 python plot_embeddings.py \
     "${prefix_mother}embeddings-hist.pickle" \
     "${prefix_mother}" \
     --mask="${prefix_mother}mask-small.png"
 
-echo "✓ 组织掩膜生成完成"
+# ==================== Step 7: Train & Predict ====================
 
-# ==================== Step 7: 训练模型并预测 ====================
-
-print_step "7/10" "训练基因表达预测模型"
-
-echo "训练模型并预测超分辨率基因表达..."
-echo "  训练轮数: ${EPOCHS}"
-echo "  状态数量: ${N_STATES}"
-echo "  设备: ${DEVICE}"
+step "7/10" "Training gene expression model (epochs=${EPOCHS}, states=${N_STATES})"
 
 python impute_integrated.py \
     "${prefix_mother}" \
@@ -269,34 +155,24 @@ python impute_integrated.py \
     --n-states=${N_STATES} \
     --dist=${DIST_ST}
 
-echo "优化基因表达预测..."
 python refine_gene.py \
     "${prefix_mother}" \
     "conserve_index.pickle"
 
-echo "✓ 模型训练和预测完成"
+# ==================== Step 8: Result Visualization ====================
 
-# ==================== Step 8: 可视化结果 ====================
+step "8/10" "Visualizing predictions"
 
-print_step "8/10" "可视化预测结果"
-
-echo "绘制预测的基因表达图..."
 python plot_imputed_iSCALE.py \
     "${prefix_mother}"
 
-echo "合并预测结果..."
 python merge_imputed.py \
     "${prefix_mother}" \
     1
 
-echo "✓ 结果可视化完成"
+# ==================== Step 9: Clustering ====================
 
-# ==================== Step 9: 聚类分析 ====================
-
-print_step "9/10" "基于基因表达的聚类分析"
-
-echo "运行聚类算法..."
-echo "  聚类数量: ${N_CLUSTERS}"
+step "9/10" "Clustering (k=${N_CLUSTERS})"
 
 python cluster_iSCALE.py \
     --n-clusters=${N_CLUSTERS} \
@@ -307,43 +183,15 @@ python cluster_iSCALE.py \
     "${prefix_mother}embeddings-gene.pickle" \
     "${prefix_mother}iSCALE_output/clusters-gene_${N_CLUSTERS}/"
 
-echo "✓ 聚类分析完成"
+# ==================== Step 10: Evaluation ====================
 
-# ==================== Step 10: 评估性能 ====================
+step "10/10" "Evaluating model performance"
 
-print_step "10/10" "评估模型性能"
-
-echo "计算训练集RMSE和Pearson相关..."
 python evaluate_fit.py \
     "${prefix_mother}"
 
-echo "✓ 性能评估完成"
+# ==================== Done ====================
 
-# ==================== 完成 ====================
-
-END_TIME=$(date +%s)
-ELAPSED=$((END_TIME - START_TIME))
-HOURS=$((ELAPSED / 3600))
-MINUTES=$(((ELAPSED % 3600) / 60))
-SECONDS=$((ELAPSED % 60))
-
-print_section "✅ iSCALE 流程完成！"
-
-echo "结束时间: $(date)"
-echo "运行时长: ${HOURS}小时 ${MINUTES}分钟 ${SECONDS}秒"
-echo ""
-echo "📂 输出目录: ${OUTPUT_BASE}"
-echo ""
-echo "📊 主要输出文件:"
-echo "  • ${prefix_mother}he.tiff                                     (预处理后的H&E图像)"
-echo "  • ${prefix_mother}embeddings-hist.pickle                      (组织学特征)"
-echo "  • ${prefix_mother}iSCALE_output/super_res_gene_expression/    (超分辨率基因表达)"
-echo "  • ${prefix_mother}iSCALE_output/super_res_ST_plots/           (可视化结果)"
-echo "  • ${prefix_mother}iSCALE_output/clusters-gene_${N_CLUSTERS}/  (聚类结果)"
-echo ""
-echo "📝 查看结果:"
-echo "  cd ${prefix_mother}iSCALE_output"
-echo "  ls -lh super_res_ST_plots/cnts-super-plots-refined/"
-echo ""
-echo "🎉 所有结果已保存到: ${OUTPUT_BASE}"
-
+ELAPSED=$(( $(date +%s) - START_TIME ))
+printf "\nDone in %dh %dm %ds\n" $((ELAPSED/3600)) $(((ELAPSED%3600)/60)) $((ELAPSED%60))
+echo "Output: ${OUTPUT_BASE}"
